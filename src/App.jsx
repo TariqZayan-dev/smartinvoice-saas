@@ -329,33 +329,33 @@ function App() {
   const LIFETIME_URL = "https://pay.ziina.com/smartinvoice/kvXLllIjer";
 
   // Call Supabase Edge Function to create a Ziina payment intent
-const handlePlanCheckout = async () => {
-  try {
-    const { data, error } = await supabase.functions.invoke("ziina-verify", {
-      body: {
-        mode: "create-intent",
-        planType: selectedPlan, // "yearly" or "lifetime"
-      },
-    });
+  const handlePlanCheckout = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("ziina-verify", {
+        body: {
+          mode: "create-intent",
+          planType: selectedPlan, // "yearly" or "lifetime"
+        },
+      });
 
-    if (error) {
-      console.error("Ziina create-intent error:", error);
-      alert("Something went wrong starting the payment. Please try again.");
-      return;
-    }
+      if (error) {
+        console.error("Ziina create-intent error:", error);
+        alert("Something went wrong starting the payment. Please try again.");
+        return;
+      }
 
-    if (data && data.payment_url) {
-      // send user to Ziina checkout
-      window.location.href = data.payment_url;
-    } else {
-      console.error("Ziina create-intent: no payment_url in response:", data);
-      alert("Could not open payment page. Please try again.");
+      if (data && data.payment_url) {
+        // send user to Ziina checkout
+        window.location.href = data.payment_url;
+      } else {
+        console.error("Ziina create-intent: no payment_url in response:", data);
+        alert("Could not open payment page. Please try again.");
+      }
+    } catch (err) {
+      console.error("Ziina create-intent unexpected error:", err);
+      alert("Unexpected error. Please try again.");
     }
-  } catch (err) {
-    console.error("Ziina create-intent unexpected error:", err);
-    alert("Unexpected error. Please try again.");
-  }
-};
+  };
 
   /* upgrade modal INSIDE preview */
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -853,60 +853,68 @@ const handlePlanCheckout = async () => {
         <section className="card">
           <h2>Items</h2>
 
-          <div className="items-header">
-            <span>Description</span>
-            <span>Qty</span>
-            <span>Price ({currency})</span>
-            <span>Amount ({currency})</span>
-            <span></span>
-          </div>
+          <div className="items-scroll">
+            <div className="items-table">
 
-          {items.map((item, i) => {
-            const amount = round2(
-              (item.quantity || 0) * (item.price || 0)
-            );
-            return (
-              <div className="items-row" key={i}>
-                <input
-                  type="text"
-                  placeholder="Item description"
-                  value={item.description}
-                  onChange={(e) =>
-                    handleItemChange(i, "description", e.target.value)
-                  }
-                />
-                <input
-                  type="number"
-                  min="0"
-                  value={item.quantity}
-                  onChange={(e) =>
-                    handleItemChange(i, "quantity", e.target.value)
-                  }
-                />
-                <input
-                  type="number"
-                  min="0"
-                  value={item.price}
-                  onChange={(e) =>
-                    handleItemChange(i, "price", e.target.value)
-                  }
-                />
-                <span className="items-amount">
-                  {amount.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </span>
-                <button
-                  className="ghost-btn"
-                  onClick={() => removeItem(i)}
-                  disabled={items.length === 1}
-                >
-                  ✕
-                </button>
+              <div className="items-header">
+                <span>Description</span>
+                <span>Qty</span>
+                <span>Price ({currency})</span>
+                <span>Amount ({currency})</span>
+                <span></span>
               </div>
-            );
-          })}
+
+              {items.map((item, i) => {
+                const amount = round2((item.quantity || 0) * (item.price || 0));
+
+                return (
+                  <div className="items-row" key={i}>
+                    <input
+                      type="text"
+                      placeholder="Item description"
+                      value={item.description}
+                      onChange={(e) =>
+                        handleItemChange(i, "description", e.target.value)
+                      }
+                    />
+
+                    <input
+                      type="number"
+                      min="0"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleItemChange(i, "quantity", e.target.value)
+                      }
+                    />
+
+                    <input
+                      type="number"
+                      min="0"
+                      value={item.price}
+                      onChange={(e) =>
+                        handleItemChange(i, "price", e.target.value)
+                      }
+                    />
+
+                    <span className="items-amount">
+                      {amount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+
+                    <button
+                      className="ghost-btn"
+                      onClick={() => removeItem(i)}
+                      disabled={items.length === 1}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           <button className="secondary-btn" onClick={addItem}>
             + Add item

@@ -1129,3 +1129,41 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Make items table scrollable on mobile */
+.items-scroll {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.items-table {
+  display: inline-block;
+  min-width: 600px; /* ensures table does not squish on small screens */
+}
+
+/* Header row style */
+.items-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr;
+  gap: 10px;
+  padding: 10px 0;
+  font-weight: 600;
+}
+
+/* Each items row */
+.items-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+/* Make remove button look nice */
+.items-row .ghost-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+}
